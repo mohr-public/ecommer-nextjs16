@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-export const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL;
+export const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || 'http://localhost:3000';
 
 export const addNewProduct = async(formData) => {
     try {
@@ -56,7 +56,7 @@ export const getAllAdminProductsToken = async () => {
 
 export const getAllAdminProducts = async () => {
     try {
-        const res = await fetch(`${BACKEND_BASE_URL}/api/admin/all-products`, {
+        const res = await fetch(`http://localhost:3000/api/admin/all-products`, {
             method: 'GET',
             cache: 'no-store',
         });
@@ -118,7 +118,7 @@ export const deleteProduct = async(id) => {
 
 export const productByCategory = async(id) => {
     try {
-        const res = await fetch(`${BACKEND_BASE_URL}/api/admin/product-by-category?id=${id}`, {
+        const res = await fetch(`http://localhost:3000/api/admin/product-by-category?id=${id}`, {
             method: 'GET',
             cache: 'no-store',
         });

@@ -25,7 +25,7 @@ export default function CheckoutPage() {
     const [orderSuccess, setOrderSuccess] = useState(false);
 
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const params = useSearchParams();
 
     const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
     useEffect(() => {
         async function createFinalOrder() {
             const isStripe = JSON.parse(localStorage.getItem('stripe'));
-            if (isStripe && searchParams.get('status') === 'success' && cartItems && cartItems.length > 0) {
+            if (isStripe && params.get('status') === 'success' && cartItems && cartItems.length > 0) {
                 setIsOrderProcessing(true);
                 const getCheckoutFormData = JSON.parse(localStorage.getItem('checkoutFormData'));
 
@@ -66,7 +66,7 @@ export default function CheckoutPage() {
                     })),
                     paymentMethod: 'Stripe',
                     totalPrice: cartItems.reduce((total, item) => {
-                        return total + (item.productId ? item.productId.price : 0);
+                        return total + (item.productId ? parseFloat(item.productId.price) : 0);
                     }, 0).toFixed(2),
                     isPaid: true,
                     isProcessing: true,
@@ -100,7 +100,7 @@ export default function CheckoutPage() {
         }
 
         createFinalOrder();
-    }, [searchParams.get('status'), cartItems]);
+    }, [params.get('status'), cartItems]);
 
     function handleSelectedAddress(getAddress) {
         if (getAddress._id === selectedAddress) {

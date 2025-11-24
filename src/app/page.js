@@ -102,8 +102,8 @@ export default function Home() {
             <li>
               <div className="relative block group">
                 <img 
-                src="https://images.unsplash.com/photo-1521334884684-d80222895322?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbiUyMGNvbGxlY3Rpb258ZW58MHx8MHx8fDA%3D&w=1000&q=80" alt="Category Image" className="object-cover w-full rounded" 
-                className="object-cover w-full aspect-square"
+                src="https://images.unsplash.com/photo-1521334884684-d80222895322?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbiUyMGNvbGxlY3Rpb258ZW58MHx8MHx8fDA%3D&w=1000&q=80" alt="Category Image" 
+                className="object-cover w-full aspect-square rounded"
                 />
                 <div className="absolute inset-0 flex flex-col items-start justify-end p-6">
                   <h3 className="text-xl font-medium text-white">KIDS</h3>
@@ -117,8 +117,8 @@ export default function Home() {
             <li>
               <div className="relative block group">
                 <img 
-                src="https://images.unsplash.com/photo-1521334884684-d80222895322?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbiUyMGNvbGxlY3Rpb258ZW58MHx8MHx8fDA%3D&w=1000&q=80" alt="Category Image" className="object-cover w-full rounded" 
-                className="object-cover w-full aspect-square"
+                src="https://images.unsplash.com/photo-1521334884684-d80222895322?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbiUyMGNvbGxlY3Rpb258ZW58MHx8MHx8fDA%3D&w=1000&q=80" alt="Category Image" 
+                className="object-cover w-full aspect-square rounded"
                 />
                 <div className="absolute inset-0 flex flex-col items-start justify-end p-6">
                   <h3 className="text-xl font-medium text-white">WOMEN</h3>
@@ -133,8 +133,8 @@ export default function Home() {
             <li className="lg:col-span-2 lg:col-start-2 lg:row-span-2 lg:row-start-1">
               <div className="relative block group">
                 <img 
-                src="https://images.unsplash.com/photo-1521334884684-d80222895322?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbiUyMGNvbGxlY3Rpb258ZW58MHx8MHx8fDA%3D&w=1000&q=80" alt="Category Image" className="object-cover w-full rounded" 
-                className="object-cover w-full aspect-square"
+                src="https://images.unsplash.com/photo-1521334884684-d80222895322?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbiUyMGNvbGxlY3Rpb258ZW58MHx8MHx8fDA%3D&w=1000&q=80" alt="Category Image" 
+                className="object-cover w-full aspect-square rounded"
                 />
                 <div className="absolute inset-0 flex flex-col items-start justify-end p-6">
                   <h3 className="text-xl font-medium text-white">MEN</h3>
