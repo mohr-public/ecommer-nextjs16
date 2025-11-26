@@ -4,7 +4,7 @@ import { GlobalContext } from '@/context';
 import { fetchAllAddresses } from '@/services/address';
 import { loadStripe } from '@stripe/stripe-js';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { use, useContext, useEffect, useState } from 'react';
+import { use, useContext, useEffect, useState, Suspense } from 'react';
 import { callStripeSession } from '@/services/stripe';
 import { PulseLoader } from 'react-spinners';
 import { set } from 'mongoose';
@@ -25,7 +25,10 @@ export default function CheckoutPage() {
     const [orderSuccess, setOrderSuccess] = useState(false);
 
     const router = useRouter();
-    const params = useSearchParams();
+    const searchParams = useSearchParams();
+    const currentStatus = searchParams.get('status');
+
+    console.log("currentStatus: ", currentStatus);
 
     const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -53,7 +56,7 @@ export default function CheckoutPage() {
     useEffect(() => {
         async function createFinalOrder() {
             const isStripe = JSON.parse(localStorage.getItem('stripe'));
-            if (isStripe && params.get('status') === 'success' && cartItems && cartItems.length > 0) {
+            if (isStripe && currentStatus === 'success' && cartItems && cartItems.length > 0) {
                 setIsOrderProcessing(true);
                 const getCheckoutFormData = JSON.parse(localStorage.getItem('checkoutFormData'));
 
@@ -100,7 +103,7 @@ export default function CheckoutPage() {
         }
 
         createFinalOrder();
-    }, [params.get('status'), cartItems]);
+    }, [currentStatus, cartItems]);
 
     function handleSelectedAddress(getAddress) {
         if (getAddress._id === selectedAddress) {
@@ -175,7 +178,7 @@ export default function CheckoutPage() {
             const timeoutId = setTimeout(() => {
                 // setOrderSuccess(false);
                 router.push('/orders');
-            }, 2000);
+            }, 3000);
             return () => clearTimeout(timeoutId);
         }
     }, [orderSuccess, router]);
@@ -212,104 +215,107 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div>
-            <div className="mt-8 grid sm:mt-0 sm:px-10 md:mt-8 lg:grid-cols-2 lg:px-20 lg:mt-0 xl:px-32">
-                <div className="px-4 pt-8">
-                    <p className="text-xl font-medium">Cart Summary</p>
-                    <div className="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-5">
-                        {
-                            cartItems && cartItems.length ?
-                                cartItems.map((item) => (
-                                    <div key={item._id} className="flex flex-col rounded-lg bg-white sm:flex-row">
-                                        <img className="m-2 h-24 w-28 rounded-md border object-cover object-center" src={item && item.productId && item.productId.imageUrl} alt="Cart Item" />
-                                        <div className="flex w-full flex-col px-4 py-4">
-                                            <span className="font-bold">{item && item.productId && item.productId.name}</span>
-                                            <span className="font-semibold">{item && item.productId && item.productId.price}</span>
-                                        </div>
+        <Suspense>
+            <div>
+                <div className="mt-8 grid sm:mt-0 sm:px-10 md:mt-8 lg:grid-cols-2 lg:px-20 lg:mt-0 xl:px-32">
+                    <div className="px-4 pt-8">
+                        <p className="text-xl font-medium">Cart Summary</p>
+                        <div className="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-5">
+                            {
+                                cartItems && cartItems.length ?
+                                    cartItems.map((item) => (
+                                        <div key={item._id} className="flex flex-col rounded-lg bg-white sm:flex-row">
+                                            <img className="m-2 h-24 w-28 rounded-md border object-cover object-center" src={item && item.productId && item.productId.imageUrl} alt="Cart Item" />
+                                            <div className="flex w-full flex-col px-4 py-4">
+                                                <span className="font-bold">{item && item.productId && item.productId.name}</span>
+                                                <span className="font-semibold">{item && item.productId && item.productId.price}</span>
+                                            </div>
 
-                                    </div>
-                                )) : (
-                                    <div className="p-4 text-center text-gray-500">
-                                        Your cart is empty.
-                                    </div>
-                                )
-                        }
+                                        </div>
+                                    )) : (
+                                        <div className="p-4 text-center text-gray-500">
+                                            Your cart is empty.
+                                        </div>
+                                    )
+                            }
+                        </div>
+                    </div>
+                    <div className="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
+                        <p className="text-xl font-medium">Shipping address details</p>
+                        <p className="text-gray-400 font-bold">Complete your order by selecting address below</p>
+                        <div className="w-full mt-6 mr-0 mb-0 ml-0 space-y-6">
+                            {
+                                addresses && addresses.length ?
+                                    addresses.map((item) => (
+                                        <div key={item._id} 
+                                            onClick={() => handleSelectedAddress(item)}
+                                            className={`border p-6 ${selectedAddress === item._id ? 'border-red-900 bg-gray-100' : 'border-gray-200'} rounded-lg cursor-pointer hover:border-black`}>
+                                            <p>Name : {item.fullName}</p>
+                                            <p>Address : {item.address}</p>
+                                            <p>City : {item.city}</p>
+                                            <p>Country : {item.country}</p>
+                                            <p>Postal Code : {item.postalCode}</p>
+                                            <p>Location : {item.city}, {item.country} {item.postalCode}</p>
+                                            <button
+                                                className="mt-5 mr-5 inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase tracking-wide hover:bg-gray-800 cursor-pointer"
+                                            >
+                                                {item._id === selectedAddress ? 'Selected Address' : 'Select Address'}
+                                            </button>
+                                        </div>
+                                    )) : (
+                                        <div className="p-4 text-center text-gray-500">
+                                            No addresses added.
+                                        </div>
+                                    )
+                            }
+                        </div>
+                        <button onClick={() => router.push('/account')}
+                            className="mt-5 mr-5 inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase tracking-wide hover:bg-gray-800 cursor-pointer"
+                        >
+                            Add new Address
+                        </button>
+                        <div className="mt-6 border-t border-b py-2">
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium text-gray-900">Subtotal</p>
+                                <p className="text-lg font-bold text-gray-900">
+                                    ${
+                                        cartItems && cartItems.length ?
+                                            cartItems.reduce((total, item) => parseFloat(item.productId.price) + total, 0).toFixed(2)
+                                            : '0.00'
+                                    }
+                                </p>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium text-gray-900">Shipping</p>
+                                <p className="text-lg font-bold text-gray-900">Free</p>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium text-gray-900">Total</p>
+                                <p className="text-lg font-bold text-gray-900">
+                                    ${
+                                        cartItems && cartItems.length ?
+                                            cartItems.reduce((total, item) => {
+                                                return (item.productId ? parseFloat(item.productId.price) : 0) + total;
+                                            }, 0).toFixed(2)
+                                            : '0.00'
+                                    }
+                                </p>
+                            </div>
+                            <div className="pb-10">
+                                <button disabled={(cartItems && cartItems.length === 0) || Object.keys(checkoutFormData.shippingAddress).length === 0}
+                                onClick={handleCheckout}
+                                    className="disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none mt-5 mr-5 w-full inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase tracking-wide hover:bg-gray-800 cursor-pointer"
+                                >
+                                    Checkout
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
-                    <p className="text-xl font-medium">Shipping address details</p>
-                    <p className="text-gray-400 font-bold">Complete your order by selecting address below</p>
-                    <div className="w-full mt-6 mr-0 mb-0 ml-0 space-y-6">
-                        {
-                            addresses && addresses.length ?
-                                addresses.map((item) => (
-                                    <div key={item._id} 
-                                        onClick={() => handleSelectedAddress(item)}
-                                        className={`border p-6 ${selectedAddress === item._id ? 'border-red-900 bg-gray-100' : 'border-gray-200'} rounded-lg cursor-pointer hover:border-black`}>
-                                        <p>Name : {item.fullName}</p>
-                                        <p>Address : {item.address}</p>
-                                        <p>City : {item.city}</p>
-                                        <p>Country : {item.country}</p>
-                                        <p>Postal Code : {item.postalCode}</p>
-                                        <p>Location : {item.city}, {item.country} {item.postalCode}</p>
-                                        <button
-                                            className="mt-5 mr-5 inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase tracking-wide hover:bg-gray-800 cursor-pointer"
-                                        >
-                                            {item._id === selectedAddress ? 'Selected Address' : 'Select Address'}
-                                        </button>
-                                    </div>
-                                )) : (
-                                    <div className="p-4 text-center text-gray-500">
-                                        No addresses added.
-                                    </div>
-                                )
-                        }
-                    </div>
-                    <button onClick={() => router.push('/account')}
-                        className="mt-5 mr-5 inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase tracking-wide hover:bg-gray-800 cursor-pointer"
-                    >
-                        Add new Address
-                    </button>
-                    <div className="mt-6 border-t border-b py-2">
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium text-gray-900">Subtotal</p>
-                            <p className="text-lg font-bold text-gray-900">
-                                ${
-                                    cartItems && cartItems.length ?
-                                        cartItems.reduce((total, item) => parseFloat(item.productId.price) + total, 0).toFixed(2)
-                                        : '0.00'
-                                }
-                            </p>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium text-gray-900">Shipping</p>
-                            <p className="text-lg font-bold text-gray-900">Free</p>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium text-gray-900">Total</p>
-                            <p className="text-lg font-bold text-gray-900">
-                                ${
-                                    cartItems && cartItems.length ?
-                                        cartItems.reduce((total, item) => {
-                                            return (item.productId ? parseFloat(item.productId.price) : 0) + total;
-                                        }, 0).toFixed(2)
-                                        : '0.00'
-                                }
-                            </p>
-                        </div>
-                        <div className="pb-10">
-                            <button disabled={(cartItems && cartItems.length === 0) || Object.keys(checkoutFormData.shippingAddress).length === 0}
-                            onClick={handleCheckout}
-                                className="disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none mt-5 mr-5 w-full inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase tracking-wide hover:bg-gray-800 cursor-pointer"
-                            >
-                                Checkout
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <Notification />
             </div>
-            <Notification />
-        </div>
+        </Suspense>
+        
     )
 
 }

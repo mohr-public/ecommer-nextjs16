@@ -22,7 +22,7 @@ export default function OrdersPage() {
     setPageLevelLoader(true);
     const res = await getAllOrdersByUser(user?._id);
     if (res.success) {
-      console.log('All orders by user:', res.data);
+      // console.log('All orders by user:', res.data);
       setPageLevelLoader(false);
 
       setAllOrdersForUser(res.data);
@@ -49,7 +49,7 @@ export default function OrdersPage() {
     }
   }, [user]);
 
-  console.log('All orders for user state:', allOrdersForUser);
+  // console.log('All orders for user state:', allOrdersForUser);
 
   if (pageLevelLoader) {
     return (

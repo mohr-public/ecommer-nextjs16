@@ -25,7 +25,7 @@ export default function Home() {
     getListOfProducts();
   }, []);
 
-  console.log("Products:", products);
+  // console.log("Products:", products);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

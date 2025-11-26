@@ -56,7 +56,7 @@ export const getAllAdminProductsToken = async () => {
 
 export const getAllAdminProducts = async () => {
     try {
-        const res = await fetch(`http://localhost:3000/api/admin/all-products`, {
+        const res = await fetch('http://localhost:3000/api/admin/all-products', {
             method: 'GET',
             cache: 'no-store',
         });
